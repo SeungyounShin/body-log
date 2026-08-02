@@ -314,6 +314,107 @@
     });
   }
 
+  // ── 메인 리프트 중량 계산 ───────────────────────────────
+  // 실제 1RM → 수행1RM(×0.925) → 주차별 % → 2.5kg 단위 반올림
+  const MAXES_KEY = 'bodylog-maxes';
+  const loadMaxes = () => {
+    try { return JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch (e) { return {}; }
+  };
+  const roundTo = (v, step) => Math.round(v / step) * step;
+  const fmtKg = (v) => (v % 1 === 0 ? String(v) : v.toFixed(1));
+
+  function renderWave(wp) {
+    $('#wave-card').hidden = false;
+    $('#wave-note').textContent = wp.note || '';
+    $('#wave-final').textContent = wp.finalNote || '';
+    $('#wave-progress').textContent = wp.progressNote || '';
+
+    const maxes = loadMaxes();
+    const perform = {};
+    (wp.lifts || []).forEach((l) => {
+      const m = Number(maxes[l.key]);
+      perform[l.key] = m > 0 ? roundTo(m * wp.performRatio, wp.rounding) : null;
+    });
+
+    // 입력 필드 (한 번만 만들고 이후엔 표만 다시 그린다)
+    const host = $('#max-inputs');
+    if (!host.childElementCount) {
+      (wp.lifts || []).forEach((l) => {
+        const f = el('div', 'max-field');
+        const lb = el('label', null, `${l.label} 1RM`);
+        lb.htmlFor = `max-${l.key}`;
+        f.appendChild(lb);
+        const row = el('div', 'max-row');
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.id = `max-${l.key}`;
+        inp.min = '0';
+        inp.step = '2.5';
+        inp.inputMode = 'decimal';
+        inp.placeholder = '예: 80';
+        if (has(maxes[l.key])) inp.value = maxes[l.key];
+        inp.addEventListener('input', () => {
+          const cur = loadMaxes();
+          if (inp.value === '') delete cur[l.key];
+          else cur[l.key] = Number(inp.value);
+          localStorage.setItem(MAXES_KEY, JSON.stringify(cur));
+          renderWave(wp);
+        });
+        row.appendChild(inp);
+        row.appendChild(el('span', 'max-unit', 'kg'));
+        f.appendChild(row);
+        host.appendChild(f);
+      });
+    }
+
+    const known = (wp.lifts || []).filter((l) => perform[l.key]);
+    $('#perform-line').innerHTML = known.length
+      ? `수행1RM · ${known.map((l) => `${l.label} <span class="kg">${fmtKg(perform[l.key])}kg</span>`).join(' · ')}`
+      : '1RM을 입력하면 아래 표가 실제 중량으로 바뀝니다. 지금은 % 표시입니다.';
+
+    const cell = (spec, key) => {
+      if (!spec) return '생략';
+      const p = perform[key];
+      const base = `${spec.reps}회 · ${spec.sets}세트`;
+      if (!p) return `${spec.pct}% · ${base}`;
+      return `${fmtKg(roundTo(p * spec.pct / 100, wp.rounding))}kg · ${base}`;
+    };
+
+    const table = $('#wave-table');
+    table.textContent = '';
+    const thead = el('thead');
+    const hr = el('tr');
+    hr.appendChild(el('th', null, '주차'));
+    hr.appendChild(el('th', 'num-cell', '기간'));
+    (wp.lifts || []).forEach((l) => hr.appendChild(el('th', 'num-cell', `${l.label} (${l.day.slice(0, 1)})`)));
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    const tb = el('tbody');
+    (wp.weeks || []).forEach((w) => {
+      const tr = el('tr');
+      tr.appendChild(el('td', null, w.week));
+      tr.appendChild(el('td', 'num-cell', w.dates));
+      (wp.lifts || []).forEach((l) => tr.appendChild(el('td', 'num-cell', cell(w[l.key], l.key))));
+      tb.appendChild(tr);
+    });
+    // 토요일 벤치 볼륨은 강도가 고정이라 마지막 줄에 따로
+    const vl = wp.volumeLift;
+    if (vl) {
+      const tr = el('tr');
+      tr.appendChild(el('td', null, vl.label));
+      tr.appendChild(el('td', 'num-cell', '매주 고정'));
+      const p = perform[vl.key];
+      const txt = p
+        ? `${fmtKg(roundTo(p * vl.pct / 100, wp.rounding))}kg · ${vl.reps} · ${vl.sets}세트`
+        : `${vl.pct}% · ${vl.reps} · ${vl.sets}세트`;
+      const td = el('td', 'num-cell', txt);
+      td.colSpan = (wp.lifts || []).length;
+      tr.appendChild(td);
+      tb.appendChild(tr);
+    }
+    table.appendChild(tb);
+  }
+
   // ── 운동 렌더 ───────────────────────────────────────────
   function renderWorkout(data) {
     const p = data.current || {};
@@ -393,7 +494,7 @@
       });
       table.appendChild(tb);
     };
-    gridTable(data.waveSchedule, '#wave-card', '#wave-table', '#wave-note');
+    if (data.waveProgram) renderWave(data.waveProgram);
     gridTable(data.weeklyVolume, '#volume-card', '#volume-table', '#volume-note');
 
     const refs = data.references || [];

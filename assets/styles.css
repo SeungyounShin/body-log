@@ -222,6 +222,25 @@ tbody tr:hover { background: var(--hover-wash); }
 .day-table th:last-child, .day-table td:last-child { width: auto; }
 .changelog, .bullets { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text-secondary); }
 .changelog li + li, .bullets li + li { margin-top: 5px; }
+/* 1RM 입력 */
+.max-inputs {
+  display: grid; gap: 10px; margin: 14px 0 4px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.max-field { display: flex; flex-direction: column; gap: 4px; }
+.max-field label { font-size: 12.5px; color: var(--text-secondary); }
+.max-field .max-row { display: flex; align-items: center; gap: 6px; }
+.max-field input {
+  font: inherit; font-size: 15px; font-variant-numeric: tabular-nums;
+  width: 100%; padding: 7px 10px;
+  background: var(--page); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.max-field input:focus { outline: 2px solid var(--series-1); outline-offset: -1px; }
+.max-unit { font-size: 13px; color: var(--text-secondary); }
+.perform-line { margin: 10px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+.kg { font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
 /* 강도표·볼륨표: 첫 열만 왼쪽, 나머지는 내용 폭 */
 .num-cell { text-align: left; white-space: normal; }
 #wave-table td, #volume-table td { white-space: normal; }
