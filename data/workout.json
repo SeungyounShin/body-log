@@ -1,0 +1,40 @@
+{
+  "current": {
+    "name": "기본 프로그램",
+    "startDate": "2026-08-02",
+    "note": "여기에 지금 돌리고 있는 프로그램을 적으세요. days 배열을 자유롭게 늘리거나 줄이면 됩니다.",
+    "days": [
+      {
+        "name": "Day A · Push",
+        "focus": "가슴 / 어깨 / 삼두",
+        "exercises": [
+          { "name": "벤치프레스", "sets": 4, "reps": "6-8", "load": "-", "note": "" },
+          { "name": "인클라인 덤벨프레스", "sets": 3, "reps": "8-10", "load": "-", "note": "" },
+          { "name": "숄더프레스", "sets": 3, "reps": "8-10", "load": "-", "note": "" },
+          { "name": "케이블 트라이셉스 푸시다운", "sets": 3, "reps": "12-15", "load": "-", "note": "" }
+        ]
+      },
+      {
+        "name": "Day B · Pull",
+        "focus": "등 / 이두",
+        "exercises": [
+          { "name": "데드리프트", "sets": 4, "reps": "5", "load": "-", "note": "" },
+          { "name": "랫풀다운", "sets": 3, "reps": "8-12", "load": "-", "note": "" },
+          { "name": "바벨로우", "sets": 3, "reps": "8-10", "load": "-", "note": "" },
+          { "name": "바벨컬", "sets": 3, "reps": "10-12", "load": "-", "note": "" }
+        ]
+      },
+      {
+        "name": "Day C · Legs",
+        "focus": "하체 / 코어",
+        "exercises": [
+          { "name": "스쿼트", "sets": 4, "reps": "6-8", "load": "-", "note": "" },
+          { "name": "레그프레스", "sets": 3, "reps": "10-12", "load": "-", "note": "" },
+          { "name": "루마니안 데드리프트", "sets": 3, "reps": "8-10", "load": "-", "note": "" },
+          { "name": "행잉 레그레이즈", "sets": 3, "reps": "12-15", "load": "-", "note": "" }
+        ]
+      }
+    ]
+  },
+  "changelog": []
+}

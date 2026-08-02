@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Body Log</title>
+<meta name="description" content="인바디 기록과 운동 프로그램 추적">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+<link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <h1>Body Log</h1>
+    <div class="topbar-right">
+      <nav class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="inbody">인바디</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="workout">운동</button>
+      </nav>
+      <button id="theme-toggle" class="icon-btn" title="테마 전환" aria-label="테마 전환">◐</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap viz-root">
+
+  <!-- ── 인바디 ── -->
+  <section id="panel-inbody" class="panel">
+    <div id="inbody-empty" class="empty" hidden>
+      <p class="empty-title">아직 인바디 기록이 없습니다.</p>
+      <p class="empty-body"><code>data/inbody.json</code>의 <code>records</code> 배열에 기록을 추가하고 push 하면 이 페이지가 갱신됩니다. 형식은 README를 참고하세요.</p>
+    </div>
+
+    <div id="inbody-content" hidden>
+      <section class="hero-block">
+        <p class="hero-label">최근 측정 · <span id="hero-date"></span></p>
+        <p class="hero-value"><span id="hero-weight"></span><span class="hero-unit">kg</span></p>
+        <p id="hero-delta" class="hero-delta"></p>
+      </section>
+
+      <section class="tiles" id="tiles" aria-label="주요 지표"></section>
+
+      <section class="charts-grid" id="charts-grid" aria-label="지표별 추이"></section>
+
+      <section class="card">
+        <h2 class="card-title">전체 기록</h2>
+        <div class="table-scroll">
+          <table id="inbody-table"></table>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ── 운동 ── -->
+  <section id="panel-workout" class="panel" hidden>
+    <section class="card">
+      <h2 class="card-title" id="program-name"></h2>
+      <p class="card-sub" id="program-meta"></p>
+      <p class="note" id="program-note"></p>
+    </section>
+    <div id="program-days"></div>
+    <section class="card" id="changelog-card" hidden>
+      <h2 class="card-title">프로그램 변경 이력</h2>
+      <ul class="changelog" id="changelog"></ul>
+    </section>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>데이터는 <code>data/inbody.json</code>, <code>data/workout.json</code>에 있습니다.</p>
+</footer>
+
+<script src="./assets/app.js"></script>
+</body>
+</html>
