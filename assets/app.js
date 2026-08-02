@@ -261,7 +261,7 @@
     const hr = el('tr');
     hr.appendChild(el('th', null, '날짜'));
     cols.forEach((m) => hr.appendChild(el('th', null, m.unit ? `${m.label} (${m.unit})` : m.label)));
-    if (recs.some((r) => r.note)) hr.appendChild(el('th', null, '메모'));
+    if (recs.some((r) => r.note)) hr.appendChild(el('th', 'note-cell', '메모'));
     thead.appendChild(hr);
     table.appendChild(thead);
     const tb = el('tbody');
@@ -269,7 +269,7 @@
       const tr = el('tr');
       tr.appendChild(el('td', null, fmtDate(r.date)));
       cols.forEach((m) => tr.appendChild(el('td', null, fmt(r[m.key], m.dec))));
-      if (recs.some((x) => x.note)) tr.appendChild(el('td', null, r.note || ''));
+      if (recs.some((x) => x.note)) tr.appendChild(el('td', 'note-cell', r.note || ''));
       tb.appendChild(tr);
     });
     table.appendChild(tb);
@@ -317,10 +317,12 @@
   // ── 운동 렌더 ───────────────────────────────────────────
   function renderWorkout(data) {
     const p = data.current || {};
+    $('#program-goal').textContent = data.goal || '';
     $('#program-name').textContent = p.name || '프로그램';
     const meta = [];
     if (p.startDate) meta.push(`시작 ${fmtDate(p.startDate)}`);
-    if (p.days) meta.push(`${p.days.length}일 분할`);
+    if (p.weeks) meta.push(`${p.weeks}주`);
+    if (p.days) meta.push(`주 ${p.days.length}일`);
     $('#program-meta').textContent = meta.join(' · ');
     $('#program-note').textContent = p.note || '';
 
@@ -337,7 +339,7 @@
       const table = el('table', 'day-table');
       const thead = el('thead');
       const hr = el('tr');
-      ['운동', '세트', '횟수', '중량', '메모'].forEach((h) => hr.appendChild(el('th', null, h)));
+      ['운동', '세트', '횟수', '중량', '메모'].forEach((h, i) => hr.appendChild(el('th', i === 4 ? 'note-cell' : null, h)));
       thead.appendChild(hr);
       table.appendChild(thead);
       const tb = el('tbody');
@@ -347,7 +349,7 @@
         tr.appendChild(el('td', null, ex.sets ?? ''));
         tr.appendChild(el('td', null, ex.reps ?? ''));
         tr.appendChild(el('td', null, ex.load ?? ''));
-        tr.appendChild(el('td', null, ex.note || ''));
+        tr.appendChild(el('td', 'note-cell', ex.note || ''));
         tb.appendChild(tr);
       });
       table.appendChild(tb);
@@ -355,6 +357,28 @@
       card.appendChild(scroll);
       host.appendChild(card);
     });
+
+    const nut = data.nutrition;
+    if (nut) {
+      $('#nutrition-card').hidden = false;
+      $('#nutrition-note').textContent = nut.note || '';
+      const ul = $('#nutrition-points');
+      ul.textContent = '';
+      (nut.points || []).forEach((t) => ul.appendChild(el('li', null, t)));
+    }
+
+    const phases = data.phases || [];
+    if (phases.length) {
+      $('#roadmap-card').hidden = false;
+      const ol = $('#roadmap');
+      ol.textContent = '';
+      phases.forEach((ph) => {
+        const li = el('li');
+        li.appendChild(el('div', 'roadmap-name', `${ph.name}${ph.weeks ? ` · ${ph.weeks}주` : ''}`));
+        li.appendChild(el('div', 'roadmap-focus', ph.focus || ''));
+        ol.appendChild(li);
+      });
+    }
 
     const log = data.changelog || [];
     if (log.length) {
@@ -367,13 +391,100 @@
     }
   }
 
+  // ── 목표 렌더 ───────────────────────────────────────────
+  let goalsData = null;
+  let perfRecords = [];
+
+  // 같은 종목의 가장 최근 기록. 벤치처럼 반복수가 붙는 종목은 목표 반복수와 같은 세트만 인정
+  const latestPerf = (key) => [...perfRecords]
+    .filter((r) => r.key === key && has(r.value))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .pop() || null;
+
+  function renderGoals() {
+    if (!goalsData) return;
+    $('#goal-date').textContent = goalsData.targetDate ? fmtDate(goalsData.targetDate) : '—';
+    $('#goal-vision').textContent = goalsData.vision || '';
+    $('#goal-note').textContent = goalsData.note || '';
+
+    // 체성분: 시작값 → 최신 인바디 → 목표
+    const last = inbodyRecords.length ? inbodyRecords[inbodyRecords.length - 1] : null;
+    const host = $('#goal-body');
+    host.textContent = '';
+    (goalsData.body || []).forEach((g) => {
+      const cur = last && has(last[g.key]) ? Number(last[g.key]) : g.from;
+      const span = g.target - g.from;
+      const pct = span === 0 ? 100 : Math.max(0, Math.min(100, ((cur - g.from) / span) * 100));
+      const dec = METRIC[g.key] ? METRIC[g.key].dec : 1;
+
+      const row = el('div', 'goal-row');
+      const head = el('div', 'goal-head');
+      head.appendChild(el('span', 'goal-name', g.label));
+      head.appendChild(el('span', 'goal-nums',
+        `${g.from.toFixed(dec)} → ${cur.toFixed(dec)} → 목표 ${g.target.toFixed(dec)}${g.unit}`));
+      row.appendChild(head);
+
+      const meter = el('div', 'meter');
+      const fill = el('div', 'meter-fill');
+      fill.style.width = `${pct}%`;
+      meter.appendChild(fill);
+      meter.setAttribute('role', 'img');
+      meter.setAttribute('aria-label', `${g.label} 진행률 ${Math.round(pct)}%`);
+      row.appendChild(meter);
+
+      const remain = Math.abs(g.target - cur).toFixed(dec);
+      row.appendChild(el('p', 'goal-foot',
+        pct >= 100 ? '목표 달성' : `진행 ${Math.round(pct)}% · 남은 거리 ${remain}${g.unit}`));
+      host.appendChild(row);
+    });
+
+    // 퍼포먼스: 기록이 없으면 '미측정'으로 남긴다
+    const table = $('#goal-perf');
+    table.textContent = '';
+    const thead = el('thead');
+    const hr = el('tr');
+    ['종목', '현재', '12개월 마일스톤', '최종 목표', '메모']
+      .forEach((h, i) => hr.appendChild(el('th', i === 4 ? 'note-cell' : null, h)));
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    const tb = el('tbody');
+    (goalsData.performance || []).forEach((g) => {
+      const rec = latestPerf(g.key);
+      const tr = el('tr');
+      tr.appendChild(el('td', null, g.label));
+      tr.appendChild(el('td', null, rec ? `${rec.value}${g.unit}` : '미측정'));
+      tr.appendChild(el('td', null, `${g.milestone}${g.unit}`));
+      tr.appendChild(el('td', null, `${g.target}${g.unit}`));
+      tr.appendChild(el('td', 'note-cell', g.note || ''));
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);
+
+    drawPerfChart();
+  }
+
+  function drawPerfChart() {
+    const card = $('#perf-chart-card');
+    const bench = perfRecords
+      .filter((r) => r.key === 'bench' && has(r.value))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((r) => ({ date: r.date, bench: Number(r.value) }));
+    if (bench.length < 2) { card.hidden = true; return; }
+    card.hidden = false;
+    $('#perf-chart-title').textContent = '벤치프레스 10회 중량 추이';
+    $('#perf-chart-sub').textContent = '단위 kg';
+    renderLineChart($('#perf-chart'), bench,
+      [{ key: 'bench', label: '벤치프레스', color: cssVar('--series-1') }], 1, { height: 220 });
+  }
+
   // ── 탭 / 테마 / 리사이즈 ────────────────────────────────
   document.querySelectorAll('.tab').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
-      $('#panel-inbody').hidden = btn.dataset.tab !== 'inbody';
-      $('#panel-workout').hidden = btn.dataset.tab !== 'workout';
+      document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== `panel-${btn.dataset.tab}`; });
+      // 숨은 패널은 폭이 0이라 차트를 그릴 수 없다 — 보이는 순간 다시 그린다
       if (btn.dataset.tab === 'inbody') drawCharts();
+      if (btn.dataset.tab === 'goal') drawPerfChart();
     });
   });
 
@@ -381,6 +492,7 @@
     if (t) document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
     drawCharts();
+    drawPerfChart();
   };
   applyTheme(localStorage.getItem('bodylog-theme'));
   $('#theme-toggle').addEventListener('click', () => {
@@ -393,17 +505,28 @@
   });
 
   let rt;
-  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawCharts, 120); });
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { drawCharts(); drawPerfChart(); }, 120);
+  });
 
   // ── 부트 ────────────────────────────────────────────────
   const load = (path) => fetch(`${path}?v=${Date.now()}`).then((r) => {
     if (!r.ok) throw new Error(`${path}: ${r.status}`);
     return r.json();
   });
+  const loadOrNull = (path) => load(path).catch((e) => { console.error(e); return null; });
 
-  load('./data/inbody.json').then(renderInbody).catch((e) => {
-    console.error(e);
-    $('#inbody-empty').hidden = false;
+  Promise.all([
+    loadOrNull('./data/inbody.json'),
+    loadOrNull('./data/workout.json'),
+    loadOrNull('./data/goals.json'),
+    loadOrNull('./data/performance.json'),
+  ]).then(([inbody, workout, goals, perf]) => {
+    if (inbody) renderInbody(inbody); else $('#inbody-empty').hidden = false;
+    if (workout) renderWorkout(workout);
+    goalsData = goals;
+    perfRecords = (perf && perf.records) || [];
+    renderGoals();
   });
-  load('./data/workout.json').then(renderWorkout).catch(console.error);
 })();

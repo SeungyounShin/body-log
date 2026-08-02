@@ -15,6 +15,7 @@
   --good:           #006300;
   --critical:       #d03b3b;
   --hover-wash:     rgba(11, 11, 11, 0.04);
+  --meter-track:    #cde2fb;
 }
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) {
@@ -33,6 +34,7 @@
     --good:           #0ca30c;
     --critical:       #d03b3b;
     --hover-wash:     rgba(255, 255, 255, 0.06);
+    --meter-track:    #184f95;
   }
 }
 :root[data-theme="dark"] {
@@ -51,6 +53,7 @@
   --good:           #0ca30c;
   --critical:       #d03b3b;
   --hover-wash:     rgba(255, 255, 255, 0.06);
+  --meter-track:    #184f95;
 }
 
 /* ── base ───────────────────────────────────────────────── */
@@ -195,6 +198,8 @@ th {
   position: sticky; top: 0; background: var(--surface-1);
 }
 th:first-child, td:first-child { text-align: left; }
+/* 메모는 줄바꿈 — 안 그러면 표가 옆으로 한없이 밀린다 */
+.note-cell { white-space: normal; text-align: left; min-width: 180px; }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: var(--hover-wash); }
 
@@ -204,8 +209,26 @@ tbody tr:hover { background: var(--hover-wash); }
 /* 운동 표: 운동명이 남는 폭을 먹고 숫자 열은 내용 폭에 붙는다 */
 .day-table th:nth-child(n+2), .day-table td:nth-child(n+2) { width: 1px; white-space: nowrap; }
 .day-table th:last-child, .day-table td:last-child { width: auto; }
-.changelog { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text-secondary); }
-.changelog li + li { margin-top: 5px; }
+.changelog, .bullets { margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text-secondary); }
+.changelog li + li, .bullets li + li { margin-top: 5px; }
+.roadmap { margin: 12px 0 0; padding-left: 20px; font-size: 13.5px; }
+.roadmap li + li { margin-top: 10px; }
+.roadmap-name { font-weight: 600; color: var(--text-primary); }
+.roadmap-focus { color: var(--text-secondary); }
+
+/* ── 목표 미터 ─────────────────────────────────────────── */
+.goal-row { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.goal-row:last-child { border-bottom: 0; padding-bottom: 2px; }
+.goal-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.goal-name { font-weight: 600; font-size: 14px; }
+.goal-nums { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+/* 트랙은 중립 회색 — 같은 파랑 계열로 두면 0%일 때 '꽉 찬 막대'로 읽힌다 */
+.meter {
+  height: 8px; border-radius: 4px; margin-top: 9px;
+  background: var(--grid); overflow: hidden;
+}
+.meter-fill { height: 100%; border-radius: 4px; background: var(--series-1); }
+.goal-foot { margin: 6px 0 0; font-size: 12.5px; color: var(--text-secondary); }
 
 /* ── empty ──────────────────────────────────────────────── */
 .empty {

@@ -1,0 +1,24 @@
+{
+  "targetDate": "2027-08-01",
+  "vision": "하이록스 엘리트형 하이브리드 — 근육 밸런스 · 실전 퍼포먼스 · 벤치 100kg×10",
+  "note": "체성분 목표는 12개월 기준. 퍼포먼스는 12개월 마일스톤과 최종 목표를 나눠서 잡았습니다.",
+  "body": [
+    { "key": "pbf",    "label": "체지방률",  "unit": "%",  "from": 21.9, "target": 12.0 },
+    { "key": "smm",    "label": "골격근량",  "unit": "kg", "from": 32.8, "target": 35.5 },
+    { "key": "weight", "label": "체중",      "unit": "kg", "from": 73.6, "target": 69.0 }
+  ],
+  "performance": [
+    {
+      "key": "bench",
+      "label": "벤치프레스 10회 중량",
+      "unit": "kg",
+      "milestone": 80,
+      "target": 100,
+      "note": "최종 100kg×10 = e1RM 약 133kg. 체중 70kg 기준 1.9배로 다년 프로젝트입니다."
+    },
+    { "key": "squat",  "label": "백스쿼트 5회 중량", "unit": "kg", "milestone": 100, "target": 120, "note": "" },
+    { "key": "pullup", "label": "풀업 연속",          "unit": "회", "milestone": 12,  "target": 15,  "note": "" },
+    { "key": "run5k",  "label": "5km 러닝",           "unit": "분", "milestone": 27,  "target": 25,  "lowerIsBetter": true, "note": "" },
+    { "key": "hyrox",  "label": "하이록스 완주",       "unit": "분", "milestone": 100, "target": 90,  "lowerIsBetter": true, "note": "엘리트 기준은 60분대" }
+  ]
+}

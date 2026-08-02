@@ -16,6 +16,7 @@
       <nav class="tabs" role="tablist">
         <button class="tab" role="tab" aria-selected="true" data-tab="inbody">인바디</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="workout">운동</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="goal">목표</button>
       </nav>
       <button id="theme-toggle" class="icon-btn" title="테마 전환" aria-label="테마 전환">◐</button>
     </div>
@@ -39,7 +40,6 @@
       </section>
 
       <section class="tiles" id="tiles" aria-label="주요 지표"></section>
-
       <section class="charts-grid" id="charts-grid" aria-label="지표별 추이"></section>
 
       <section class="card">
@@ -54,21 +54,60 @@
   <!-- ── 운동 ── -->
   <section id="panel-workout" class="panel" hidden>
     <section class="card">
+      <p class="card-sub" id="program-goal"></p>
       <h2 class="card-title" id="program-name"></h2>
       <p class="card-sub" id="program-meta"></p>
       <p class="note" id="program-note"></p>
     </section>
     <div id="program-days"></div>
+    <section class="card" id="nutrition-card" hidden>
+      <h2 class="card-title">식단 원칙</h2>
+      <p class="note" id="nutrition-note"></p>
+      <ul class="bullets" id="nutrition-points"></ul>
+    </section>
+    <section class="card" id="roadmap-card" hidden>
+      <h2 class="card-title">단계 로드맵</h2>
+      <ol class="roadmap" id="roadmap"></ol>
+    </section>
     <section class="card" id="changelog-card" hidden>
       <h2 class="card-title">프로그램 변경 이력</h2>
       <ul class="changelog" id="changelog"></ul>
     </section>
   </section>
 
+  <!-- ── 목표 ── -->
+  <section id="panel-goal" class="panel" hidden>
+    <section class="card">
+      <p class="card-sub">목표 시점 · <span id="goal-date"></span></p>
+      <h2 class="card-title" id="goal-vision"></h2>
+      <p class="note" id="goal-note"></p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">체성분 목표</h2>
+      <p class="card-sub">시작값 → 현재 → 목표</p>
+      <div id="goal-body"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">퍼포먼스 목표</h2>
+      <p class="card-sub">12개월 마일스톤과 최종 목표</p>
+      <div class="table-scroll">
+        <table id="goal-perf"></table>
+      </div>
+    </section>
+
+    <section class="card" id="perf-chart-card" hidden>
+      <h2 class="card-title" id="perf-chart-title"></h2>
+      <p class="card-sub" id="perf-chart-sub"></p>
+      <div class="chart" id="perf-chart"></div>
+    </section>
+  </section>
+
 </main>
 
 <footer class="wrap foot">
-  <p>데이터는 <code>data/inbody.json</code>, <code>data/workout.json</code>에 있습니다.</p>
+  <p>데이터는 <code>data/</code> 안의 JSON 파일에 있습니다.</p>
 </footer>
 
 <script src="./assets/app.js"></script>
