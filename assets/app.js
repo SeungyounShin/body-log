@@ -436,7 +436,7 @@
       const head = el('div', 'goal-head');
       head.appendChild(el('span', 'goal-name', g.label));
       head.appendChild(el('span', 'goal-nums',
-        `${g.from.toFixed(dec)} → ${cur.toFixed(dec)} → 목표 ${g.target.toFixed(dec)}${g.unit}`));
+        `${g.from.toFixed(dec)} → ${cur.toFixed(dec)} → 12개월 ${g.target.toFixed(dec)}${g.unit}`));
       row.appendChild(head);
 
       const meter = el('div', 'meter');
@@ -448,8 +448,9 @@
       row.appendChild(meter);
 
       const remain = Math.abs(g.target - cur).toFixed(dec);
-      row.appendChild(el('p', 'goal-foot',
-        pct >= 100 ? '목표 달성' : `진행 ${Math.round(pct)}% · 남은 거리 ${remain}${g.unit}`));
+      const foot = pct >= 100 ? '목표 달성' : `진행 ${Math.round(pct)}% · 남은 거리 ${remain}${g.unit}`;
+      const ult = has(g.ultimate) ? ` · 최종 ${Number(g.ultimate).toFixed(dec)}${g.unit}` : '';
+      row.appendChild(el('p', 'goal-foot', foot + ult));
       host.appendChild(row);
     });
 
