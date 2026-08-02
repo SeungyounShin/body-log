@@ -424,9 +424,8 @@
 
     // 체성분: 시작값 → 최신 인바디 → 목표
     const last = inbodyRecords.length ? inbodyRecords[inbodyRecords.length - 1] : null;
-    const host = $('#goal-body');
-    host.textContent = '';
-    (goalsData.body || []).forEach((g) => {
+
+    const goalRow = (g, targetLabel) => {
       const cur = last && has(last[g.key]) ? Number(last[g.key]) : g.from;
       const span = g.target - g.from;
       const pct = span === 0 ? 100 : Math.max(0, Math.min(100, ((cur - g.from) / span) * 100));
@@ -436,7 +435,7 @@
       const head = el('div', 'goal-head');
       head.appendChild(el('span', 'goal-name', g.label));
       head.appendChild(el('span', 'goal-nums',
-        `${g.from.toFixed(dec)} → ${cur.toFixed(dec)} → 12개월 ${g.target.toFixed(dec)}${g.unit}`));
+        `${g.from.toFixed(dec)} → ${cur.toFixed(dec)} → ${targetLabel} ${g.target.toFixed(dec)}${g.unit}`));
       row.appendChild(head);
 
       const meter = el('div', 'meter');
@@ -451,8 +450,29 @@
       const foot = pct >= 100 ? '목표 달성' : `진행 ${Math.round(pct)}% · 남은 거리 ${remain}${g.unit}`;
       const ult = has(g.ultimate) ? ` · 최종 ${Number(g.ultimate).toFixed(dec)}${g.unit}` : '';
       row.appendChild(el('p', 'goal-foot', foot + ult));
-      host.appendChild(row);
-    });
+      return row;
+    };
+
+    // 단기 스프린트 — 마감이 있는 목표는 D-day가 제일 중요한 정보
+    const sp = goalsData.sprint;
+    if (sp) {
+      $('#sprint-card').hidden = false;
+      $('#sprint-name').textContent = sp.name || '';
+      $('#sprint-note').textContent = sp.note || '';
+      $('#sprint-deadline').textContent = sp.deadline ? fmtDate(sp.deadline) : '—';
+      const days = sp.deadline
+        ? Math.ceil((parseDate(sp.deadline) - new Date().setHours(0, 0, 0, 0)) / 86400000)
+        : null;
+      $('#sprint-dday').textContent = days === null ? ''
+        : days > 0 ? `D-${days}` : days === 0 ? 'D-DAY' : `D+${-days}`;
+      const sh = $('#sprint-body');
+      sh.textContent = '';
+      (sp.body || []).forEach((g) => sh.appendChild(goalRow(g, '목표')));
+    }
+
+    const host = $('#goal-body');
+    host.textContent = '';
+    (goalsData.body || []).forEach((g) => host.appendChild(goalRow(g, '12개월')));
 
     // 퍼포먼스: 기록이 없으면 '미측정'으로 남긴다
     const table = $('#goal-perf');

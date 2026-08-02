@@ -2,6 +2,16 @@
   "targetDate": "2027-08-01",
   "vision": "상체 중심 근비대 — 체지방 10%대 · 골격근량 37kg대 · 벤치 100kg×10",
   "note": "체중을 빼는 게 아니라 지방을 근육으로 갈아끼우는 방향입니다. 12개월 목표와 최종(2~3년) 목표를 나눠서 잡았습니다.",
+  "sprint": {
+    "name": "9/24 여행 스프린트",
+    "deadline": "2026-09-23",
+    "note": "8/3 시작 · 7주 3일. 이 구간의 목표는 '지방을 최대한 덜어내고 근육은 지키기' 하나입니다.",
+    "body": [
+      { "key": "pbf",    "label": "체지방률", "unit": "%",  "from": 21.9, "target": 17.0 },
+      { "key": "smm",    "label": "골격근량", "unit": "kg", "from": 32.8, "target": 33.5 },
+      { "key": "weight", "label": "체중",     "unit": "kg", "from": 73.6, "target": 69.5 }
+    ]
+  },
   "body": [
     { "key": "pbf",    "label": "체지방률",  "unit": "%",  "from": 21.9, "target": 14.0, "ultimate": 11.0 },
     { "key": "smm",    "label": "골격근량",  "unit": "kg", "from": 32.8, "target": 35.0, "ultimate": 37.5 },
