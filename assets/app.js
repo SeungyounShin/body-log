@@ -373,6 +373,50 @@
       host.appendChild(card);
     });
 
+    // columns/rows 형태의 단순 표 (주차별 강도, 부위별 볼륨)
+    const gridTable = (spec, cardId, tableId, noteId) => {
+      if (!spec) return;
+      $(cardId).hidden = false;
+      $(noteId).textContent = spec.note || '';
+      const table = $(tableId);
+      table.textContent = '';
+      const thead = el('thead');
+      const hr = el('tr');
+      (spec.columns || []).forEach((c, i) => hr.appendChild(el('th', i === 0 ? null : 'num-cell', c)));
+      thead.appendChild(hr);
+      table.appendChild(thead);
+      const tb = el('tbody');
+      (spec.rows || []).forEach((r) => {
+        const tr = el('tr');
+        r.forEach((v, i) => tr.appendChild(el('td', i === 0 ? null : 'num-cell', v)));
+        tb.appendChild(tr);
+      });
+      table.appendChild(tb);
+    };
+    gridTable(data.waveSchedule, '#wave-card', '#wave-table', '#wave-note');
+    gridTable(data.weeklyVolume, '#volume-card', '#volume-table', '#volume-note');
+
+    const refs = data.references || [];
+    if (refs.length) {
+      $('#ref-card').hidden = false;
+      const ul = $('#refs');
+      ul.textContent = '';
+      refs.forEach((r) => {
+        const li = el('li');
+        if (r.url) {
+          const a = el('a', 'ref-title', r.title || r.url);
+          a.href = r.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          li.appendChild(a);
+        } else {
+          li.appendChild(el('span', 'ref-title', r.title || ''));
+        }
+        li.appendChild(el('div', 'ref-finding', r.finding || ''));
+        ul.appendChild(li);
+      });
+    }
+
     const nut = data.nutrition;
     if (nut) {
       $('#nutrition-card').hidden = false;
