@@ -322,19 +322,11 @@
     const meta = [];
     if (p.startDate) meta.push(`시작 ${fmtDate(p.startDate)}`);
     if (p.weeks) meta.push(`${p.weeks}주`);
-    if (p.days) meta.push(`주 ${p.days.length}일`);
+    if (p.schedule) meta.push(p.schedule);
     $('#program-meta').textContent = meta.join(' · ');
     $('#program-note').textContent = p.note || '';
 
-    const host = $('#program-days');
-    host.textContent = '';
-    (p.days || []).forEach((day) => {
-      const card = el('section', 'card');
-      const head = el('div', 'day-head');
-      head.appendChild(el('h2', 'card-title', day.name || ''));
-      if (day.focus) head.appendChild(el('span', 'day-focus', day.focus));
-      card.appendChild(head);
-
+    const exerciseTable = (exercises) => {
       const scroll = el('div', 'table-scroll');
       const table = el('table', 'day-table');
       const thead = el('thead');
@@ -343,7 +335,7 @@
       thead.appendChild(hr);
       table.appendChild(thead);
       const tb = el('tbody');
-      (day.exercises || []).forEach((ex) => {
+      (exercises || []).forEach((ex) => {
         const tr = el('tr');
         tr.appendChild(el('td', null, ex.name || ''));
         tr.appendChild(el('td', null, ex.sets ?? ''));
@@ -354,7 +346,30 @@
       });
       table.appendChild(tb);
       scroll.appendChild(table);
-      card.appendChild(scroll);
+      return scroll;
+    };
+
+    const host = $('#program-days');
+    host.textContent = '';
+    (p.days || []).forEach((day) => {
+      const card = el('section', 'card');
+      const head = el('div', 'day-head');
+      head.appendChild(el('h2', 'card-title', day.name || ''));
+      if (day.focus) head.appendChild(el('span', 'day-focus', day.focus));
+      card.appendChild(head);
+
+      // 하루 2세션 구조를 그대로 표시 — 없으면 예전처럼 단일 목록
+      if (day.sessions) {
+        day.sessions.forEach((s) => {
+          const sh = el('div', 'session-head');
+          sh.appendChild(el('span', 'session-time', s.time || ''));
+          sh.appendChild(el('span', 'session-name', s.name || ''));
+          card.appendChild(sh);
+          card.appendChild(exerciseTable(s.exercises));
+        });
+      } else {
+        card.appendChild(exerciseTable(day.exercises));
+      }
       host.appendChild(card);
     });
 

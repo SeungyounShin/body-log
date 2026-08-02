@@ -59,13 +59,43 @@ photos/             인바디 결과지 사진 (선택)
 ## 운동 프로그램 수정하기
 
 `data/workout.json`의 `current`가 지금 돌리는 프로그램입니다. `days` 배열을 자유롭게 늘리고
-줄이세요. 프로그램을 바꿀 때는 `changelog`에 한 줄 남겨두면 사이트 하단에 이력으로 쌓입니다.
+줄이세요. 하루에 두 번 운동하면 `sessions`로 나눠 적습니다 (없으면 `exercises`를 바로 써도 됩니다).
+
+```json
+{
+  "name": "Day 1 · 월요일",
+  "focus": "상체 근력",
+  "sessions": [
+    { "time": "AM · 45분", "name": "Zone 2 러닝", "exercises": [ … ] },
+    { "time": "PM · 80분", "name": "상체 근력",   "exercises": [ … ] }
+  ]
+}
+```
+
+프로그램을 바꿀 때는 `changelog`에 한 줄 남겨두면 사이트에 이력으로 쌓입니다 (오래된 것부터
+적으면 화면에는 최신순으로 뒤집혀 나옵니다).
 
 ```json
 "changelog": [
-  { "date": "2026-08-02", "change": "PPL 3분할 → 5분할, 데드리프트 주 1회로 축소" }
+  { "date": "2026-08-02", "change": "주 6일 → 주 4일 2세션 구조로 재편" }
 ]
 ```
+
+## 목표와 퍼포먼스 기록
+
+- `data/goals.json` — 체성분 목표(`body`)와 퍼포먼스 목표(`performance`). 체성분은
+  `from`(시작값) → 최신 인바디 → `target`으로 진행률 미터가 자동 계산됩니다.
+- `data/performance.json` — 테스트한 날의 기록. `key`는 `goals.json`의 퍼포먼스 `key`와
+  맞춰야 목표 표의 '현재' 칸에 반영됩니다.
+
+```json
+{ "records": [
+  { "date": "2026-08-09", "key": "bench",  "value": 60, "note": "10회 3세트" },
+  { "date": "2026-08-09", "key": "pullup", "value": 8,  "note": "" }
+] }
+```
+
+`bench` 기록이 2개 이상 쌓이면 목표 탭에 추이 차트가 생깁니다.
 
 ## 로컬에서 보기
 
