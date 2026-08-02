@@ -317,8 +317,16 @@
   // ── 메인 리프트 중량 계산 ───────────────────────────────
   // 실제 1RM → 수행1RM(×0.925) → 주차별 % → 2.5kg 단위 반올림
   const MAXES_KEY = 'bodylog-maxes';
+  let liftsData = null;
   const loadMaxes = () => {
     try { return JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch (e) { return {}; }
+  };
+  // 브라우저에 저장된 값이 있으면 그걸, 없으면 lifts.json의 1RM을 씁니다
+  const maxFor = (key) => {
+    const stored = loadMaxes()[key];
+    if (has(stored)) return Number(stored);
+    const l = liftsData && (liftsData.main || []).find((x) => x.key === key);
+    return l && has(l.oneRM) ? Number(l.oneRM) : null;
   };
   const roundTo = (v, step) => Math.round(v / step) * step;
   const fmtKg = (v) => (v % 1 === 0 ? String(v) : v.toFixed(1));
@@ -329,10 +337,9 @@
     $('#wave-final').textContent = wp.finalNote || '';
     $('#wave-progress').textContent = wp.progressNote || '';
 
-    const maxes = loadMaxes();
     const perform = {};
     (wp.lifts || []).forEach((l) => {
-      const m = Number(maxes[l.key]);
+      const m = maxFor(l.key);
       perform[l.key] = m > 0 ? roundTo(m * wp.performRatio, wp.rounding) : null;
     });
 
@@ -351,8 +358,9 @@
         inp.min = '0';
         inp.step = '2.5';
         inp.inputMode = 'decimal';
-        inp.placeholder = '예: 80';
-        if (has(maxes[l.key])) inp.value = maxes[l.key];
+        inp.placeholder = '미측정';
+        const seed = maxFor(l.key);
+        if (has(seed)) inp.value = seed;
         inp.addEventListener('input', () => {
           const cur = loadMaxes();
           if (inp.value === '') delete cur[l.key];
@@ -413,6 +421,55 @@
       tb.appendChild(tr);
     }
     table.appendChild(tb);
+  }
+
+  // ── 종목별 현재 무게 ────────────────────────────────────
+  function renderLifts(d) {
+    if (!d) return;
+    $('#lifts-card').hidden = false;
+    $('#lifts-updated').textContent = d.updated ? `기준 ${fmtDate(d.updated)}` : '';
+    $('#lifts-note').textContent = d.note || '';
+
+    const badge = (status) => {
+      const s = el('span', `badge badge-${status}`, status);
+      return s;
+    };
+    const mkTable = (id, cols, rows) => {
+      const t = $(id);
+      t.textContent = '';
+      const thead = el('thead');
+      const hr = el('tr');
+      cols.forEach((c, i) => hr.appendChild(el('th', i === cols.length - 1 ? 'note-cell' : (i === 0 ? null : 'num-cell'), c)));
+      thead.appendChild(hr);
+      t.appendChild(thead);
+      const tb = el('tbody');
+      rows.forEach((cells) => {
+        const tr = el('tr');
+        cells.forEach((c, i) => {
+          const td = el('td', i === cells.length - 1 ? 'note-cell' : (i === 0 ? null : 'num-cell'));
+          if (c instanceof Node) td.appendChild(c); else td.textContent = c;
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+    };
+
+    mkTable('#lifts-main', ['종목', '1RM', '상태', '최근 수행', '근거'],
+      (d.main || []).map((l) => [
+        `${l.label} · ${l.day || ''}`,
+        has(l.oneRM) ? `${fmtKg(Number(l.oneRM))}kg` : '—',
+        badge(l.status || '미측정'),
+        l.recent ? `${l.recent.weight}kg × ${l.recent.reps}회 (RIR ${l.recent.rir})` : '—',
+        l.basis || '',
+      ]));
+
+    mkTable('#lifts-accessory', ['종목', '무게', '상태', '메모'],
+      (d.accessory || []).map((a) => [a.label, a.weight || '—', badge(a.status || '추정'), a.note || '']));
+
+    const ul = $('#lifts-todo');
+    ul.textContent = '';
+    (d.todo || []).forEach((t) => ul.appendChild(el('li', null, `${t.date} — ${t.task}`)));
   }
 
   // ── 운동 렌더 ───────────────────────────────────────────
@@ -703,8 +760,11 @@
     loadOrNull('./data/workout.json'),
     loadOrNull('./data/goals.json'),
     loadOrNull('./data/performance.json'),
-  ]).then(([inbody, workout, goals, perf]) => {
+    loadOrNull('./data/lifts.json'),
+  ]).then(([inbody, workout, goals, perf, lifts]) => {
     if (inbody) renderInbody(inbody); else $('#inbody-empty').hidden = false;
+    liftsData = lifts;            // 중량 계산기의 초기값 — renderWorkout보다 먼저
+    renderLifts(lifts);
     if (workout) renderWorkout(workout);
     goalsData = goals;
     perfRecords = (perf && perf.records) || [];

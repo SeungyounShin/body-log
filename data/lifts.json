@@ -1,0 +1,61 @@
+{
+  "updated": "2026-08-02",
+  "note": "종목별 1RM과 최근 수행 무게. 메인 리프트의 1RM은 주차별 중량 계산의 입력값이 됩니다. status가 '확정'이면 실측 기록에서 환산한 값, '추정'이면 감으로 잡은 값, '미측정'이면 첫 세션에서 실측해야 합니다.\n\n[1RM 환산 공식] 5회 든 무게 ÷ 0.87 · 6회 ÷ 0.85 · 3회 ÷ 0.93 (RIR 1~2 기준)\n[업데이트 방법] 세션에서 새 기록이 나오면 recent를 갱신하고, 환산값이 기존 1RM을 넘으면 oneRM도 올린 뒤 history에 한 줄 남기세요.",
+  "conversion": { "3": 0.93, "5": 0.87, "6": 0.85, "9": 0.75, "10": 0.73 },
+  "main": [
+    {
+      "key": "bench",
+      "label": "벤치프레스",
+      "day": "월 (메인) · 토 (볼륨)",
+      "oneRM": 70,
+      "status": "확정",
+      "date": "2026-07-14",
+      "basis": "55kg × 6회 RIR 2 → 환산 68~70kg",
+      "recent": { "weight": 55, "reps": 6, "rir": 2, "date": "2026-07-14" },
+      "history": [
+        { "date": "2026-06-28", "oneRM": 65, "basis": "60kg × 2회 RIR 0.5" },
+        { "date": "2026-07-14", "oneRM": 70, "basis": "55kg × 6회 RIR 2" }
+      ]
+    },
+    {
+      "key": "ohp",
+      "label": "오버헤드 프레스",
+      "day": "목 (메인)",
+      "oneRM": 40,
+      "status": "추정",
+      "date": null,
+      "basis": "감으로 40kg. 첫 목요일 세션에서 실측 필요",
+      "recent": null,
+      "history": []
+    },
+    {
+      "key": "deadlift",
+      "label": "데드리프트",
+      "day": "일 (메인)",
+      "oneRM": null,
+      "status": "미측정",
+      "date": null,
+      "basis": "상체 분할 + 크로스핏 구조로 기록 없음. 첫 일요일에 실측",
+      "recent": null,
+      "history": []
+    }
+  ],
+  "accessory": [
+    { "label": "인클라인 덤벨프레스", "weight": "16~18kg (한쪽)", "status": "확정", "note": "16/15/14로 시작해 18 진행 중" },
+    { "label": "체스트 프레스 머신", "weight": "20~25kg (양쪽)", "status": "확정", "note": "레버리지 있는 머신 기준" },
+    { "label": "바벨로우", "weight": "40kg", "status": "추정", "note": "첫 세트 RIR 보고 조정" },
+    { "label": "랫풀다운", "weight": "45kg", "status": "추정", "note": "" },
+    { "label": "시티드 케이블로우", "weight": "40kg", "status": "추정", "note": "" },
+    { "label": "원암 덤벨로우", "weight": "20kg", "status": "추정", "note": "" },
+    { "label": "바벨컬", "weight": "20kg", "status": "추정", "note": "" },
+    { "label": "해머컬", "weight": "12kg (한쪽)", "status": "추정", "note": "" },
+    { "label": "시티드 덤벨 숄더프레스", "weight": "12kg (한쪽)", "status": "추정", "note": "" },
+    { "label": "사이드 레터럴 레이즈", "weight": "5~7kg", "status": "추정", "note": "반동 없이 드는 무게로" },
+    { "label": "풀업", "weight": "자중", "status": "미측정", "note": "첫 세션에서 연속 개수 재기 — 목표 15회" }
+  ],
+  "todo": [
+    { "date": "첫 목요일 (8/6)", "task": "OHP 실측 — 30kg부터 올려 6회 RIR 2 지점 찾고 ÷0.85로 환산" },
+    { "date": "첫 일요일 (8/9)", "task": "데드리프트 실측 — 60kg부터 올려 6회 RIR 2 지점 찾고 ÷0.85로 환산" },
+    { "date": "첫 화요일 (8/4)", "task": "풀업 연속 개수 + 등 종목들 첫 세트 RIR 보고 추정치 확정" }
+  ]
+}
