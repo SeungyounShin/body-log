@@ -16,6 +16,7 @@
       <nav class="tabs" role="tablist">
         <button class="tab" role="tab" aria-selected="true" data-tab="inbody">인바디</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="workout">운동</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="log">기록</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="goal">목표</button>
       </nav>
       <button id="theme-toggle" class="icon-btn" title="테마 전환" aria-label="테마 전환">◐</button>
@@ -104,6 +105,12 @@
       <h2 class="card-title">프로그램 변경 이력</h2>
       <ul class="changelog" id="changelog"></ul>
     </section>
+  </section>
+
+  <!-- ── 세션 기록 ── -->
+  <section id="panel-log" class="panel" hidden>
+    <p class="card-sub" id="log-note"></p>
+    <div id="log-list"></div>
   </section>
 
   <!-- ── 목표 ── -->

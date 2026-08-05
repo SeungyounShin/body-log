@@ -423,6 +423,53 @@
     table.appendChild(tb);
   }
 
+  // ── 세션 기록 ───────────────────────────────────────────
+  function renderSessions(d) {
+    if (!d) return;
+    $('#log-note').textContent = d.note || '';
+    const host = $('#log-list');
+    host.textContent = '';
+    const list = [...(d.sessions || [])].sort((a, b) => b.date.localeCompare(a.date));
+    if (!list.length) {
+      host.appendChild(el('p', 'card-sub', '아직 기록이 없습니다.'));
+      return;
+    }
+    list.forEach((s) => {
+      const card = el('section', 'card');
+      const head = el('div', 'day-head');
+      head.appendChild(el('h2', 'card-title', `${fmtDate(s.date)} · ${s.session || ''}`));
+      if (s.block) head.appendChild(el('span', 'day-focus', s.block));
+      card.appendChild(head);
+      if (s.place) card.appendChild(el('p', 'card-sub', s.place));
+      if (s.note) card.appendChild(el('p', 'note', s.note));
+
+      const scroll = el('div', 'table-scroll');
+      const table = el('table', 'day-table');
+      const thead = el('thead');
+      const hr = el('tr');
+      ['종목', '수행', 'RIR', '메모'].forEach((h, i) => hr.appendChild(el('th', i === 3 ? 'note-cell' : null, h)));
+      thead.appendChild(hr);
+      table.appendChild(thead);
+      const tb = el('tbody');
+      (s.exercises || []).forEach((ex) => {
+        const tr = el('tr');
+        tr.appendChild(el('td', null, ex.name || ''));
+        tr.appendChild(el('td', null, ex.sets || ''));
+        tr.appendChild(el('td', null, ex.rir || '-'));
+        tr.appendChild(el('td', 'note-cell', ex.note || ''));
+        tb.appendChild(tr);
+      });
+      table.appendChild(tb);
+      scroll.appendChild(table);
+      card.appendChild(scroll);
+
+      if ((s.skipped || []).length) {
+        card.appendChild(el('p', 'goal-foot', `건너뜀 · ${s.skipped.join(' · ')}`));
+      }
+      host.appendChild(card);
+    });
+  }
+
   // ── 종목별 현재 무게 ────────────────────────────────────
   function renderLifts(d) {
     if (!d) return;
@@ -761,10 +808,12 @@
     loadOrNull('./data/goals.json'),
     loadOrNull('./data/performance.json'),
     loadOrNull('./data/lifts.json'),
-  ]).then(([inbody, workout, goals, perf, lifts]) => {
+    loadOrNull('./data/sessions.json'),
+  ]).then(([inbody, workout, goals, perf, lifts, sessions]) => {
     if (inbody) renderInbody(inbody); else $('#inbody-empty').hidden = false;
     liftsData = lifts;            // 중량 계산기의 초기값 — renderWorkout보다 먼저
     renderLifts(lifts);
+    renderSessions(sessions);
     if (workout) renderWorkout(workout);
     goalsData = goals;
     perfRecords = (perf && perf.records) || [];
