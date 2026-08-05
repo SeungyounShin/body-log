@@ -2,6 +2,7 @@
   "note": "테스트한 날 기록을 추가하세요. key는 goals.json의 performance key와 맞춰야 목표 진행률이 계산됩니다. bench는 '10회 가능 중량' 기준이라, 1RM에서 환산할 때는 ×0.73~0.75를 씁니다.",
   "records": [
     { "date": "2026-06-28", "key": "bench", "value": 48.8, "note": "1RM 65kg 환산 (60kg × 2회 RIR 0.5)" },
-    { "date": "2026-07-14", "key": "bench", "value": 52.5, "note": "1RM 70kg 환산 (55kg × 6회 RIR 2)" }
+    { "date": "2026-07-14", "key": "bench", "value": 52.5, "note": "1RM 70kg 환산 (55kg × 6회 RIR 2)" },
+    { "date": "2026-08-06", "key": "ohp", "value": 38, "note": "5회 중량 환산 — 40kg × 3회 RIR 1.5 실측" }
   ]
 }
