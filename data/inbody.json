@@ -1,6 +1,14 @@
 {
-  "profile": { "height": 172.0, "sex": "male" },
-  "unit": { "weight": "kg", "mass": "kg", "percent": "%", "energy": "kcal" },
+  "profile": {
+    "height": 172.0,
+    "sex": "male"
+  },
+  "unit": {
+    "weight": "kg",
+    "mass": "kg",
+    "percent": "%",
+    "energy": "kcal"
+  },
   "records": [
     {
       "date": "2026-08-02",
@@ -10,6 +18,15 @@
       "bfm": 16.1,
       "bmi": 24.9,
       "note": "첫 기록 · 체지방량과 BMI는 계산값"
+    },
+    {
+      "date": "2026-09-05",
+      "weight": 75.0,
+      "smm": 31.9,
+      "pbf": 24.5,
+      "bfm": 18.4,
+      "bmi": 25.4,
+      "note": "한 달 공백 후 측정 · 체지방량과 BMI는 계산값"
     }
   ]
 }
